@@ -6,13 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.mysticmaster.tamngon247.feature.config.RetrofitConfig
+import dev.mysticmaster.tamngon247.feature.data.mapper.CategoryItemMapper
 import dev.mysticmaster.tamngon247.feature.data.model.CategoryItem
 import dev.mysticmaster.tamngon247.feature.data.request.CategoryItemRequest
 import kotlinx.coroutines.launch
 
 class CategoryViewModel : ViewModel() {
-    private val _categories = MutableLiveData<List<CategoryItem>>()
-    val categories: LiveData<List<CategoryItem>> = _categories
+    private val _categories = MutableLiveData<List<CategoryItemMapper>>()
+    val categories: LiveData<List<CategoryItemMapper>> = _categories
 
     init {
         getAllCategory()
@@ -25,7 +26,31 @@ class CategoryViewModel : ViewModel() {
                 Log.d("TAG", "getAllCategory: $response ")
 
                 if (response.isSuccessful) {
-                    _categories.postValue(response.body()?.map { it.toCategoryItem() })
+                    val list = mutableListOf<CategoryItemMapper>()
+
+                    response.body()?.map {
+                        it
+
+                        val categoryItemMapper = CategoryItemMapper(
+                            it.categoryName,
+                            "",
+                            "",
+                            "",
+                            it.status,
+                            it.id
+                        )
+
+                        val response1 = RetrofitConfig().imageService.getImageById(it.idImage)
+                        if (response1.isSuccessful) {
+                            response1.body()?.let { it1 ->
+                                categoryItemMapper.idImage = it1.id
+                                categoryItemMapper.path = it1.path
+                                categoryItemMapper.url = it1.url
+                            }
+                        }
+                        list.add(categoryItemMapper)
+                    }
+                    _categories.postValue(list)
                 } else _categories.postValue(emptyList())
             } catch (e: Exception) {
                 Log.e("TAG", "getAllCategory: " + e.message)

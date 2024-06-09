@@ -9,14 +9,14 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ImageService {
-    @GET("image/{_id}")
-    suspend fun getImageById(@Path("_id") id: String): Response<ImageItem?>
+    @GET("image/{id}")
+    suspend fun getImageById(@Path("id") id: String): Response<ImageItem?>
 
     @POST("image")
     suspend fun addImage(@Body imageItem: ImageItem): Response<ImageItem?>
 
-    @PUT("image/{_id}")
+    @PUT("image/{id}")
     suspend fun updateImage(
-        @Path("_id") id: String,
+        @Path("id") id: String,
         @Body imageItem: ImageItem): Response<Boolean>
 }

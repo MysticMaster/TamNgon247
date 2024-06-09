@@ -1,4 +1,4 @@
-package dev.mysticmaster.tamngon247.ui.dialog.category
+package dev.mysticmaster.tamngon247.ui.dialog.dish
 
 import android.util.Log
 import android.widget.Toast
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -28,21 +29,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import dev.mysticmaster.tamngon247.feature.data.mapper.CategoryItemMapper
-import dev.mysticmaster.tamngon247.feature.data.model.CategoryItem
 import dev.mysticmaster.tamngon247.feature.data.request.CategoryItemRequest
-import dev.mysticmaster.tamngon247.viewmodel.CategoryViewModel
+import dev.mysticmaster.tamngon247.feature.data.request.DishItemRequest
+import dev.mysticmaster.tamngon247.ui.components.DropdownMenuBox
+import dev.mysticmaster.tamngon247.viewmodel.DishViewModel
 
 @Composable
-fun CategoryUpdateDialog(
-    categoryItem: CategoryItemMapper,
-    categoryViewModel: CategoryViewModel,
+fun DishAddDialog(
+    dishViewModel: DishViewModel,
     onDismiss: () -> Unit
 ) {
-    var categoryName by remember { mutableStateOf(categoryItem.categoryName) }
+    var dishName by remember { mutableStateOf("") }
+    var dishPrice by remember { mutableStateOf(0) }
+    var selectedMainCourse by remember { mutableStateOf("Món chính") }
+    val mainCourseOptions = listOf("Món chính", "Món phụ", "Topping")
     var context = LocalContext.current
 
     Dialog(onDismissRequest = onDismiss) {
@@ -66,22 +70,49 @@ fun CategoryUpdateDialog(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = "Cập nhật loại món ăn",
+                    text = "Thêm món ăn",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontWeight = FontWeight.SemiBold
                 )
+
                 Spacer(modifier = Modifier.height(20.dp))
+                DropdownMenuBox(selectedMainCourse, mainCourseOptions) { selectedMainCourse = it }
+                Spacer(modifier = Modifier.height(10.dp))
                 TextField(
-                    value = categoryName,
-                    onValueChange = { categoryName = it },
+                    value = dishPrice.toString(),
+                    onValueChange = {
+                        try {
+                            dishPrice = it.toInt()
+                        }catch (e : NumberFormatException){
+                            Toast.makeText(
+                                context,
+                                "Sai định dạng giá món ăn",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 17.sp,
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    placeholder = {
+                        Text(text = "Nhập giá món ăn")
+                    }
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
+                    value = dishName,
+                    onValueChange = { dishName = it },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 17.sp,
                     ),
                     placeholder = {
-                        Text(text = "Nhập tên loại món ăn")
+                        Text(text = "Nhập tên món ăn")
                     }
                 )
 
@@ -94,24 +125,34 @@ fun CategoryUpdateDialog(
                     Button(
                         onClick = {
 
-                            if (categoryName.length < 4) {
+                            if (dishName.length < 4) {
                                 Toast.makeText(
                                     context,
-                                    "Loại món ăn không được để trống và phải có trên 4 ký tự",
+                                    "Món ăn không được để trống và phải có trên 4 ký tự",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 return@Button
                             }
 
-                            val updateCategoryItemRequest = CategoryItemRequest(
-                                categoryName = categoryName,
-                                idImage = categoryItem.idImage,
-                                status = categoryItem.status,
-                                id = categoryItem.id
-                            )
+                            if (dishPrice <= 0){
+                                Toast.makeText(
+                                    context,
+                                    "Giá món ăn phải lớn hơn 0",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@Button
+                            }
 
-                            Log.e("TAG", "newCategory: ${updateCategoryItemRequest}")
-                            categoryViewModel.updateCategory(updateCategoryItemRequest)
+                            val dishItemRequest =
+                                DishItemRequest(
+                                    dishName,
+                                   idCategory =  "66608809ff4c95b44ec21056",
+                                   idImage =  "chuaco",
+                                    dishPrice = dishPrice,
+                                    true
+                                )
+                            Log.e("TAG", "newDish: ${dishItemRequest}")
+                            dishViewModel.addDish(dishItemRequest)
                             onDismiss()
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -119,7 +160,7 @@ fun CategoryUpdateDialog(
                             contentColor = Color.White
                         )
                     ) {
-                        Text("Lưu")
+                        Text("THÊM")
                     }
                 }
 

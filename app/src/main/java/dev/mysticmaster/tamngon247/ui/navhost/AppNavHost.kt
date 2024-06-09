@@ -13,11 +13,13 @@ import dev.mysticmaster.tamngon247.ui.screen.login.AdminLoginScreen
 import dev.mysticmaster.tamngon247.ui.screen.login.CustomerLoginScreen
 import dev.mysticmaster.tamngon247.util.Route
 import dev.mysticmaster.tamngon247.viewmodel.CategoryViewModel
+import dev.mysticmaster.tamngon247.viewmodel.DishViewModel
 
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
     val categoryViewModel = CategoryViewModel()
+    val dishViewModel = DishViewModel()
 
     NavHost(navController = navController, startDestination = Route.Welcome.screen) {
         composable(Route.Welcome.screen) { WelcomeScreen(navController) }
@@ -26,7 +28,7 @@ fun AppNavHost() {
         composable(Route.CustomerBottomAppBar.screen) { CustomerBottomAppBar() }
         composable(Route.AdminBottomAppBar.screen) { AdminBottomAppBar(navController) }
         composable(Route.CategoryManager.screen) { CategoryManagerScreen(navController,categoryViewModel) }
-        composable(Route.DishManager.screen) { DishManagerScreen() }
+        composable(Route.DishManager.screen) { DishManagerScreen(navController,dishViewModel) }
     }
 
 }
