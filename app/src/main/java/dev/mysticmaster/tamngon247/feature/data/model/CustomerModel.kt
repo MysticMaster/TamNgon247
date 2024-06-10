@@ -1,6 +1,7 @@
 package dev.mysticmaster.tamngon247.feature.data.model
 
-data class CustomerItem(
+data class CustomerModel(
+    val id: String,
     val fullName: String,
     val username: String,
     val password: String,
@@ -10,7 +11,7 @@ data class CustomerItem(
     val street: String,
     val houseNumber: String,
     val city: String,
-    val idImage: String,
-    val status: Boolean,
-    val id: String
+    val imagePath: String?,
+    val imageUrl: String?,
+    val status: Boolean
 )

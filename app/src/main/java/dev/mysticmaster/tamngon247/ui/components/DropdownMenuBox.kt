@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,12 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.mysticmaster.tamngon247.feature.data.model.CategoryModel
 
 @Composable
 fun DropdownMenuBox(
-    selectedOption: String,
-    options: List<String>,
-    onOptionSelected: (String) -> Unit
+    options: List<CategoryModel>,
+    selectedCategory: MutableState<CategoryModel?>
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -47,7 +48,7 @@ fun DropdownMenuBox(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = selectedOption, color = Color.White)
+            Text(text = selectedCategory.value?.categoryName ?: "Chọn một loại món ăn", color = Color.White)
             IconButton(
                 onClick = { expanded = true },
                 modifier = Modifier.size(24.dp)
@@ -62,10 +63,10 @@ fun DropdownMenuBox(
             options.forEach { option ->
                 DropdownMenuItem(
                     onClick = {
-                        onOptionSelected(option)
+                        selectedCategory.value = option
                         expanded = false
                     },
-                    text = { Text(text = option) } // Added the text modifier
+                    text = { Text(text = option.categoryName) } // Added the text modifier
                 )
             }
         }

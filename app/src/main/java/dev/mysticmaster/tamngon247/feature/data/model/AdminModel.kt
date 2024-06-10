@@ -1,10 +1,11 @@
 package dev.mysticmaster.tamngon247.feature.data.model
 
-data class AdminItem(
+data class AdminModel(
+    val id: String,
     val fullName: String,
     val username: String,
     val password: String,
-    val idImage: String,
-    val status: Boolean,
-    val id: String
+    val imagePath: String?,
+    val imageUrl: String?,
+    val status: Boolean
 )

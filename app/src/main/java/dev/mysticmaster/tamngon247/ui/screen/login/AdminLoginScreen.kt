@@ -10,14 +10,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -35,50 +41,94 @@ import dev.mysticmaster.tamngon247.viewmodel.AdminLoginViewModel
 import dev.mysticmaster.tamngon247.viewmodel.LoginViewModel
 
 @Composable
-fun AdminLoginScreen(navController: NavController) {
-    val loginViewModel = LoginViewModel()
+fun AdminLoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val adminLoginViewModel = AdminLoginViewModel()
     val nowRoute = Route.AdminLogin
     val nextRoute = Route.AdminBottomAppBar
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    HandleLoginState(snackbarHostState, loginViewModel, navController, nextRoute, nowRoute)
 
     HandleGoToCustomerLoginState(
         adminLoginViewModel = adminLoginViewModel,
         navController = navController
     )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BackgroundColor)
-            .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logotamngon),
-            contentDescription = "logo",
-            modifier = Modifier.size(100.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Đăng Nhập",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        LoginCard(
-            navController = navController,
-            loginViewModel = loginViewModel,
-            nowRoute = nowRoute,
-            nextRoute = nextRoute
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        GoToCustomerLoginButton {
-            adminLoginViewModel.goToCustomerLogin()
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BackgroundColor)
+                .padding(horizontal = 15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Image(
+                painter = painterResource(id = R.drawable.logotamngon),
+                contentDescription = "logo",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.size(100.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Đăng Nhập",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            LoginCard(
+                loginViewModel = loginViewModel,
+                typeLogin = false
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            GoToCustomerLoginButton {
+                adminLoginViewModel.goToCustomerLogin()
+            }
         }
     }
 }
+@Composable
+private fun HandleLoginState(
+    snackbarHostState: SnackbarHostState,
+    loginViewModel: LoginViewModel,
+    navController: NavController,
+    nextRoute: Route,
+    nowRoute: Route
+) {
+    val isAuthenticated by loginViewModel.isAdminAuthenticated.observeAsState(initial = 0L)
+    LaunchedEffect(key1 = isAuthenticated) {
+        when (isAuthenticated) {
+            200L -> {
+                navController.navigate(nextRoute.screen) {
+                    popUpTo(nowRoute.screen) { inclusive = true }
+                }
+                loginViewModel.resetAdminAuthenticationState()
+            }
+
+            400L -> {
+                snackbarHostState.showSnackbar(
+                    message = "Tài khoản và mật khẩu không chính xác",
+                    duration = SnackbarDuration.Short,
+                )
+                loginViewModel.resetAdminAuthenticationState()
+            }
+
+            404L -> {
+                snackbarHostState.showSnackbar(
+                    message = "Tên đăng nhập không tồn tại",
+                    duration = SnackbarDuration.Short,
+                )
+                loginViewModel.resetAdminAuthenticationState()
+            }
+
+            null -> {}
+        }
+    }
+}
+
 
 @Composable
 private fun HandleGoToCustomerLoginState(

@@ -46,8 +46,6 @@ fun CategoryManagerCardItem(
     var showDialogDelete by remember { mutableStateOf(false) }
     var showDialogUpdate by remember { mutableStateOf(false) }
 
-
-
     if (showDialogDelete) {
         CategoryDeleteDialog(
             onConfirmation = {
@@ -65,6 +63,7 @@ fun CategoryManagerCardItem(
             onDismiss = { showDialogUpdate = false }
         )
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,7 +85,7 @@ fun CategoryManagerCardItem(
 
             AsyncImage(
                 model = if (!categoryModel.imageUrl.isNullOrEmpty()) categoryModel.imageUrl else ExtraImage,
-                contentDescription = null,
+                contentDescription = "Category Image",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .wrapContentHeight()

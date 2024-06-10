@@ -40,77 +40,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import dev.mysticmaster.tamngon247.ui.theme.BackgroundColor
-import dev.mysticmaster.tamngon247.util.Route
 import dev.mysticmaster.tamngon247.viewmodel.LoginViewModel
 
 @Composable
 fun LoginCard(
-    navController: NavController,
     loginViewModel: LoginViewModel,
-    nextRoute: Route,
-    nowRoute: Route
+    typeLogin : Boolean
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    HandleLoginState(snackbarHostState, loginViewModel, navController, nextRoute, nowRoute)
-    LoginForm(loginViewModel)
-}
-
-@Composable
-private fun HandleLoginState(
-    snackbarHostState: SnackbarHostState,
-    loginViewModel: LoginViewModel,
-    navController: NavController,
-    nextRoute: Route,
-    nowRoute: Route
-) {
-    val isAuthenticated by loginViewModel.isAuthenticated.observeAsState()
-    LaunchedEffect(key1 = isAuthenticated) {
-        when (isAuthenticated) {
-            true -> {
-                navController.navigate(nextRoute.screen) {
-                    popUpTo(nowRoute.screen) { inclusive = true }
-                }
-            }
-
-            false -> {
-                snackbarHostState.showSnackbar(
-                    message = "Invalid username or password.",
-                    duration = SnackbarDuration.Short,
-                )
-                loginViewModel.resetAuthenticationState()
-            }
-
-            null -> {}
-        }
-    }
-}
-
-@Composable
-private fun LoginForm(
-    loginViewModel: LoginViewModel,
-) {
-    val usernameState by loginViewModel.username.observeAsState("")
-    val rememberMeState by loginViewModel.rememberMe.observeAsState(false)
-    var username by remember { mutableStateOf(usernameState) }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(rememberMeState) }
+    var rememberMe by remember { mutableStateOf(false) }
     val isLoginEnabled = username.isNotBlank() && password.isNotBlank()
-    LaunchedEffect(usernameState, rememberMeState) {
-        username = usernameState
-        rememberMe = rememberMeState
-        Log.d("PAM", "LoginForm: username $usernameState rememberMeState $rememberMeState")
-    }
 
     Card(
         modifier = Modifier
@@ -135,7 +80,8 @@ private fun LoginForm(
                 loginViewModel.login(
                     username,
                     password,
-                    rememberMe
+                    rememberMe,
+                    typeLogin = typeLogin
                 )
             }
         }

@@ -3,10 +3,13 @@ package dev.mysticmaster.tamngon247.ui.navigation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -36,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -63,6 +67,7 @@ fun AdminBottomAppBar(navController: NavController) {
             topBar = {
                 Column(Modifier.fillMaxWidth()) {
                     TopAppBar(
+                        modifier = Modifier.height(40.dp),
                         title = {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -72,9 +77,10 @@ fun AdminBottomAppBar(navController: NavController) {
                                     painter = painterResource(id = R.drawable.logotamngon),
                                     contentDescription = "",
                                     contentScale = ContentScale.Fit,
-                                    modifier = Modifier.fillMaxWidth(0.12f)
+                                    modifier = Modifier.size(30.dp)
                                 )
-                                Text(text = "TamNgon247")
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(text = "Tấm Ngon 247", fontSize = 20.sp)
 
                             }
                         },
@@ -83,23 +89,20 @@ fun AdminBottomAppBar(navController: NavController) {
                             titleContentColor = Color.White,
                         )
                     )
-                    Divider(thickness = 2.dp, color = Color.Black)
                 }
             },
 
             bottomBar = {
                 Column(Modifier.fillMaxWidth()) {
-                    Divider(thickness = 2.dp, color = Color.Black)
-
                     BottomAppBar(
-                        containerColor = Color.Black
+                        containerColor = Color.Black,
+                        modifier = Modifier.height(50.dp)
                     ) {
                         IconButton(
                             onClick = {
                                 selected.value = Icons.Default.Home
                                 navControllerNavigation.navigate(Route.AdminHome.screen) {
                                     popUpTo(0)
-
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -108,7 +111,7 @@ fun AdminBottomAppBar(navController: NavController) {
                             Icon(
                                 if (selected.value == Icons.Default.Home) Icons.Default.Home else Icons.Outlined.Home,
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp),
+                                modifier = Modifier.size(25.dp),
                                 tint = Color.White
                             )
 
@@ -127,7 +130,7 @@ fun AdminBottomAppBar(navController: NavController) {
                             Icon(
                                 if (selected.value == Icons.Rounded.InsertChart) Icons.Rounded.InsertChart else Icons.Outlined.InsertChart,
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp),
+                                modifier = Modifier.size(25.dp),
                                 tint = Color.White
 
                             )
@@ -147,7 +150,7 @@ fun AdminBottomAppBar(navController: NavController) {
                             Icon(
                                 if (selected.value == Icons.Rounded.Category) Icons.Rounded.Category else Icons.Outlined.Category,
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp),
+                                modifier = Modifier.size(25.dp),
                                 tint = Color.White
 
                             )
@@ -166,7 +169,7 @@ fun AdminBottomAppBar(navController: NavController) {
                             Icon(
                                 if (selected.value == Icons.Default.Person) Icons.Default.Person else Icons.Outlined.Person,
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp),
+                                modifier = Modifier.size(25.dp),
                                 tint = Color.White
                             )
                         }

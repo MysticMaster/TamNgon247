@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -39,8 +40,7 @@ import dev.mysticmaster.tamngon247.viewmodel.CustomerLoginViewModel
 import dev.mysticmaster.tamngon247.viewmodel.LoginViewModel
 
 @Composable
-fun CustomerLoginScreen(navController: NavController) {
-    val loginViewModel = LoginViewModel()
+fun CustomerLoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val customerLoginViewModel = CustomerLoginViewModel()
     val nowRoute = Route.CustomerLogin
     val nextRoute = Route.CustomerBottomAppBar
@@ -54,13 +54,14 @@ fun CustomerLoginScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundColor)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.logotamngon),
             contentDescription = "logo",
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier.size(100.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -68,14 +69,12 @@ fun CustomerLoginScreen(navController: NavController) {
             text = "Đăng Nhập",
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
+            fontSize = 28.sp
         )
         Spacer(modifier = Modifier.height(15.dp))
         LoginCard(
-            navController = navController,
             loginViewModel = loginViewModel,
-            nowRoute = nowRoute,
-            nextRoute = nextRoute
+            typeLogin = true
         )
 
         Spacer(modifier = Modifier.height(15.dp))

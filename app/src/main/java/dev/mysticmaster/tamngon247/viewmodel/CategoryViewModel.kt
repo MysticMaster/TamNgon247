@@ -11,6 +11,8 @@ import dev.mysticmaster.tamngon247.feature.config.RetrofitConfig
 import dev.mysticmaster.tamngon247.feature.data.model.CategoryModel
 import dev.mysticmaster.tamngon247.feature.data.request.CategoryRequest
 import dev.mysticmaster.tamngon247.util.bitmapToFile
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -22,8 +24,14 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
     private val _categories = MutableLiveData<List<CategoryModel>>()
     val categories: LiveData<List<CategoryModel>> = _categories
 
-    private val _categoryAddResponse = MutableLiveData<String?>()
-    val categoryAddResponse: LiveData<String?> = _categoryAddResponse
+    private val _addMessage = MutableLiveData<String?>()
+    val addMessage : LiveData<String?> = _addMessage
+
+    private val _updateMessage = MutableLiveData<String?>()
+    val updateMessage : LiveData<String?> = _updateMessage
+
+    private val _deleteMessage = MutableLiveData<String?>()
+    val deleteMessage : LiveData<String?> = _deleteMessage
 
     init {
         getAllCategory()
@@ -35,7 +43,7 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
                 val response = RetrofitConfig().categoryService.getAllCategory()
                 Log.d("TAG", "getAllCategory: $response ")
 
-                if (response.isSuccessful) {
+                if (response.code() == 200) {
 
                     _categories.postValue(response.body()?.map { it.toCategoryModel() })
                 } else _categories.postValue(emptyList())
@@ -46,27 +54,23 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    fun getCategoryById(id: String?): LiveData<CategoryModel?> {
-        val liveData = MutableLiveData<CategoryModel?>()
+    fun getCategoryById(id: String?): Flow<CategoryModel?> = flow {
         id?.let {
-            viewModelScope.launch {
-                val response = RetrofitConfig().categoryService.getCategoryById(id)
-                Log.d("TAG", "getCategoryById: $response ")
-                try {
-                    if (response.isSuccessful) {
-                        liveData.postValue(response.body()?.toCategoryModel())
-                    } else liveData.postValue(null)
-                } catch (e: Exception) {
-                    Log.e("TAG", "getCategoryById: " + e.message)
-                    liveData.postValue(null)
-                }
+            val response = RetrofitConfig().categoryService.getCategoryById(it)
+            Log.d("TAG", "getCategoryById: $response ")
+
+            try {
+                if (response.code() == 200) {
+                    emit(response.body()?.toCategoryModel())
+                } else emit(null)
+            } catch (e: Exception) {
+                Log.e("TAG", "getCategoryById: " + e.message)
+                emit(null)
             }
         }
-        return liveData
     }
 
     fun addCategory(categoryRequest: CategoryRequest, bitmap: Bitmap?) {
-        val liveData = MutableLiveData<String?>()
         try {
             viewModelScope.launch {
                 Log.d("SUCCESS", "newCategory: ${categoryRequest}")
@@ -83,7 +87,7 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
 
                 var filePart: MultipartBody.Part? = null
                 if (bitmap != null) {
-                    val file = bitmapToFile(bitmap,  context)
+                    val file = bitmapToFile(bitmap, context)
                     val fileReqBody: RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
                     filePart = MultipartBody.Part.createFormData("filename", file.name, fileReqBody)
                 }
@@ -91,20 +95,19 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
                 val response = RetrofitConfig().categoryService.addCategory(filePart, partMap)
 
                 if (response.code() == 201) {
-                    _categoryAddResponse.postValue("Thêm mới danh mục thành công")
+                    _addMessage.postValue("Thêm mới danh mục thành công")
                     getAllCategory()
-                }else{
-                    _categoryAddResponse.postValue("Thêm mới danh mục thất bại")
+                } else {
+                    _addMessage.postValue("Thêm mới danh mục thất bại")
                 }
             }
         } catch (e: Exception) {
-            _categoryAddResponse.postValue("Đã xảy ra sự cố với máy chủ")
+            _addMessage.postValue("Đã xảy ra sự cố với máy chủ")
             Log.e("ERROR", "addCategory: " + e.message)
         }
     }
 
-    fun updateCategory(categoryRequest: CategoryRequest, bitmap: Bitmap?) : LiveData<String?> {
-        val liveData = MutableLiveData<String?>()
+    fun updateCategory(categoryRequest: CategoryRequest, bitmap: Bitmap?) {
         try {
             viewModelScope.launch {
                 val categoryName: RequestBody =
@@ -125,7 +128,7 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
 
                 var filePart: MultipartBody.Part? = null
                 if (bitmap != null) {
-                    val file = bitmapToFile(bitmap,  context)
+                    val file = bitmapToFile(bitmap, context)
                     val fileReqBody: RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
                     filePart = MultipartBody.Part.createFormData("filename", file.name, fileReqBody)
                 }
@@ -137,42 +140,45 @@ class CategoryViewModel(private val context: Context) : ViewModel() {
                 )
 
                 if (response.code() == 200) {
-                    liveData.postValue("Cập nhật danh mục thành công")
+                    _updateMessage.postValue("Cập nhật danh mục thành công")
                     getAllCategory()
-                }else{
-                    liveData.postValue("Cập nhật danh mục thất bại")
+                } else {
+                    _updateMessage.postValue("Cập nhật danh mục thất bại")
                 }
             }
         } catch (e: Exception) {
-            liveData.postValue("Đã xảy ra sự cố với máy chủ")
+            _updateMessage.postValue("Đã xảy ra sự cố với máy chủ")
             Log.e("ERROR", "updateCategory: " + e.message)
         }
-        return liveData
     }
 
-    fun deleteCategory(id: String) : LiveData<String?> {
-        val liveData = MutableLiveData<String?>()
+    fun deleteCategory(id: String) {
         viewModelScope.launch {
             try {
                 val response = RetrofitConfig().categoryService.deleteCategory(id)
                 if (response.code() == 200) {
                     getAllCategory()
-                    liveData.postValue("Đã xóa danh mục này")
-                }else if(response.code() == 400){
-                    liveData.postValue("Danh mục này tồn tại sản phẩm liên quan")
+                    _deleteMessage.postValue("Đã xóa danh mục này")
+                } else if (response.code() == 400) {
+                    _deleteMessage.postValue("Danh mục này tồn tại sản phẩm liên quan")
                 } else {
                     Log.d("ERROR", "Failed to delete category")
                 }
             } catch (e: Exception) {
-                liveData.postValue("Đã xảy ra sự cố với máy chủ")
+                _deleteMessage.postValue("Đã xảy ra sự cố với máy chủ")
                 Log.e("ERROR", "deleteCategory: ${e.message}")
             }
         }
-        return liveData
     }
 
-    fun resetCategoryAddResponse() {
-        _categoryAddResponse.postValue(null)
+    fun resetAddMessage() {
+        _addMessage.postValue(null)
+    }
+    fun resetUpdateMessage() {
+        _updateMessage.postValue(null)
+    }
+    fun resetDeleteMessage() {
+        _deleteMessage.postValue(null)
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.mysticmaster.tamngon247.feature.data.response
 
 import com.google.gson.annotations.SerializedName
+import dev.mysticmaster.tamngon247.feature.data.model.DishModel
 
 class DishResponse(
     @SerializedName("_id")
@@ -16,5 +17,17 @@ class DishResponse(
     @SerializedName("dish_price")
     val dishPrice: Int,
     @SerializedName("status")
-    val status: Boolean,
-)
+    val status: Boolean
+) {
+    fun toDishModel(): DishModel {
+        return DishModel(
+            id = this.id,
+            dishName = this.dishName,
+            idCategory = this.idCategory,
+            imagePath = this.imagePath,
+            imageUrl = this.imageUrl,
+            dishPrice = this.dishPrice,
+            status = this.status
+        )
+    }
+}

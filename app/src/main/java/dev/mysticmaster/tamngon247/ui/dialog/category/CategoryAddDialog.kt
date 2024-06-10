@@ -81,15 +81,6 @@ fun CategoryAddDialog(
             }).build()
     )
 
-    val categoryAddResponse by categoryViewModel.categoryAddResponse.observeAsState()
-
-    LaunchedEffect(categoryAddResponse) {
-        categoryAddResponse?.let { response ->
-            Toast.makeText(context, response, Toast.LENGTH_LONG).show()
-            categoryViewModel.resetCategoryAddResponse() // Optional: Reset LiveData to prevent showing the toast multiple times
-        }
-    }
-
     Dialog(onDismissRequest = onDismiss) {
 
         Card(
@@ -148,8 +139,8 @@ fun CategoryAddDialog(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 Row(
-                    Modifier.fillMaxWidth().padding(horizontal = 80.dp),
-                    horizontalArrangement = Arrangement.Center
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
                         onClick = {
@@ -178,8 +169,6 @@ fun CategoryAddDialog(
                                 categoryViewModel.addCategory(categoryRequest, null)
                             }
                             onDismiss()
-
-
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFFFB703),
@@ -187,6 +176,18 @@ fun CategoryAddDialog(
                         )
                     ) {
                         Text("THÊM")
+                    }
+
+                    Button(
+                        onClick = {
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFFB703),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Hủy")
                     }
                 }
 
