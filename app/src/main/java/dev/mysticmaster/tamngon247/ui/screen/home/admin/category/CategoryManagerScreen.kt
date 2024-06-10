@@ -53,8 +53,8 @@ fun CategoryManagerScreen(navController: NavController, categoryViewModel: Categ
 
     if (showDialogAdd) {
         CategoryAddDialog(
+            categoryViewModel = categoryViewModel,
             onDismiss = { showDialogAdd = false },
-            categoryViewModel = categoryViewModel
         )
     }
 
@@ -110,7 +110,7 @@ fun CategoryManagerScreen(navController: NavController, categoryViewModel: Categ
         ) {
             items(categories.size) { index ->
                 CategoryManagerCardItem(
-                    categoryItem = categories[index],
+                    categoryModel = categories[index],
                     index = index,
                     categoryViewModel = categoryViewModel
                 )

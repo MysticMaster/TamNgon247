@@ -1,5 +1,6 @@
 package dev.mysticmaster.tamngon247.feature.presentation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .safeDrawingPadding()
                 ) { innerPadding ->
-                    AppNavHost()
+                    AppNavHost(context = this)
                 }
             }
         }

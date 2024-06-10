@@ -121,7 +121,7 @@ private fun LoginForm(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp, 24.dp)
+                .padding(horizontal = 15.dp, vertical =  15.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -130,7 +130,7 @@ private fun LoginForm(
             Spacer(modifier = Modifier.height(5.dp))
             PasswordField(password, onPasswordChange = { password = it })
             RememberMeSwitch(rememberMe) { isChecked -> rememberMe = isChecked }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             LoginButton(isLoginEnabled) {
                 loginViewModel.login(
                     username,

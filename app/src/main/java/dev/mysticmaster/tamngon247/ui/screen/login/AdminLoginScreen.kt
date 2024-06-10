@@ -3,6 +3,7 @@ package dev.mysticmaster.tamngon247.ui.screen.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,13 +51,13 @@ fun AdminLoginScreen(navController: NavController) {
             .fillMaxSize()
             .background(BackgroundColor)
             .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
         Image(
             painter = painterResource(id = R.drawable.logotamngon),
             contentDescription = "logo",
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(100.dp)
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
@@ -72,7 +73,7 @@ fun AdminLoginScreen(navController: NavController) {
             nowRoute = nowRoute,
             nextRoute = nextRoute
         )
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         GoToCustomerLoginButton {
             adminLoginViewModel.goToCustomerLogin()
         }

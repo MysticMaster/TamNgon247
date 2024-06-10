@@ -1,4 +1,4 @@
-package dev.mysticmaster.tamngon247.feature.data.remote
+package dev.mysticmaster.tamngon247.feature.data.response
 
 import com.google.gson.annotations.SerializedName
 

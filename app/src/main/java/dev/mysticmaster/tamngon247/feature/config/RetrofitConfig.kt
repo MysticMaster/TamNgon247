@@ -4,7 +4,6 @@ import mystic.master.tamngon247.feature.data.remote.service.AdminService
 import mystic.master.tamngon247.feature.data.remote.service.CategoryService
 import mystic.master.tamngon247.feature.data.remote.service.CustomerService
 import mystic.master.tamngon247.feature.data.remote.service.DishService
-import mystic.master.tamngon247.feature.data.remote.service.ImageService
 import mystic.master.tamngon247.feature.data.remote.service.OrderItemService
 import mystic.master.tamngon247.feature.data.remote.service.OrderService
 import mystic.master.tamngon247.feature.data.remote.service.StorageImageService
@@ -13,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 open class RetrofitConfig {
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:3000/")
+        .baseUrl("http://192.168.1.245:3000/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -31,10 +30,6 @@ open class RetrofitConfig {
 
     val dishService: DishService by lazy {
         retrofit.create(DishService::class.java)
-    }
-
-    val imageService: ImageService by lazy {
-        retrofit.create(ImageService::class.java)
     }
 
     val orderService: OrderService by lazy {

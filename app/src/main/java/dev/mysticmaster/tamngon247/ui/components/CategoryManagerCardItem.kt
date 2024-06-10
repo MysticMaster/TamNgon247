@@ -30,26 +30,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import dev.mysticmaster.tamngon247.feature.data.mapper.CategoryItemMapper
-import dev.mysticmaster.tamngon247.feature.data.model.CategoryItem
+import dev.mysticmaster.tamngon247.feature.data.model.CategoryModel
 import dev.mysticmaster.tamngon247.ui.dialog.category.CategoryDeleteDialog
 import dev.mysticmaster.tamngon247.ui.dialog.category.CategoryUpdateDialog
 import dev.mysticmaster.tamngon247.ui.theme.ItemColor
+import dev.mysticmaster.tamngon247.util.ExtraImage
 import dev.mysticmaster.tamngon247.viewmodel.CategoryViewModel
 
 @Composable
 fun CategoryManagerCardItem(
     categoryViewModel: CategoryViewModel,
     index: Int,
-    categoryItem: CategoryItemMapper
+    categoryModel: CategoryModel
 ) {
     var showDialogDelete by remember { mutableStateOf(false) }
     var showDialogUpdate by remember { mutableStateOf(false) }
 
+
+
     if (showDialogDelete) {
         CategoryDeleteDialog(
             onConfirmation = {
-                categoryViewModel.deleteCategory(categoryItem.id)
+                categoryViewModel.deleteCategory(categoryModel.id)
                 showDialogDelete = false
             },
             onDismiss = { showDialogDelete = false }
@@ -58,7 +60,7 @@ fun CategoryManagerCardItem(
 
     if (showDialogUpdate) {
         CategoryUpdateDialog(
-            categoryItem = categoryItem,
+            categoryModel = categoryModel,
             categoryViewModel = categoryViewModel,
             onDismiss = { showDialogUpdate = false }
         )
@@ -68,42 +70,59 @@ fun CategoryManagerCardItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(color = ItemColor)
-            .padding(12.dp)
-            .padding(horizontal = 5.dp),
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = "${index + 1}.", fontSize = 18.sp,
-            color = Color.White,
-            modifier = Modifier.padding(end = 15.dp)
-        )
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "${index + 1}.", fontSize = 15.sp,
+                color = Color.White,
+                modifier = Modifier.padding(end = 10.dp)
+            )
 
-        AsyncImage(
-            model = if (!categoryItem.url.isNullOrEmpty()) categoryItem.url
-            else "https://firebasestorage.googleapis.com/v0/b/tamngon247.appspot.com/o/categories%2Flogotamngon.png?alt=media&token=a8ac489c-e0c0-4df4-a728-30de494c10ed",
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .wrapContentHeight()
-                .size(45.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-        )
+            AsyncImage(
+                model = if (!categoryModel.imageUrl.isNullOrEmpty()) categoryModel.imageUrl else ExtraImage,
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .size(45.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+            )
 
-        Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(0.75f),
-            text = categoryItem.categoryName,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White
-        )
-        IconButton(onClick = { showDialogUpdate = true }) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "", tint = Color.White)
+            Text(
+                text = categoryModel.categoryName,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
         }
-        IconButton(onClick = { showDialogDelete = true }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "", tint = Color.White)
+
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { showDialogUpdate = true }) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Update",
+                    tint = Color.White,
+                )
+            }
+
+            IconButton(onClick = { showDialogDelete = true }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.White,
+                )
+            }
         }
     }
 }
